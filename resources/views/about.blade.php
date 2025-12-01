@@ -31,22 +31,38 @@
     <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row gy-4">
             <div class="col-lg-6 order-1 order-lg-2">
-                <img src="{{ asset('assets/img/about.jpg') }}" class="img-fluid" alt="About Yummy Restaurant">
+                @if($aboutSection && $aboutSection->image)
+                    <img src="{{ asset('storage/' . $aboutSection->image) }}" class="img-fluid" alt="{{ $aboutSection->title }}">
+                @else
+                    <img src="{{ asset('assets/img/about.jpg') }}" class="img-fluid" alt="About Yummy Restaurant">
+                @endif
             </div>
             <div class="col-lg-6 order-2 order-lg-1 content">
-                <h3>Our Story</h3>
+                <h3>{{ $aboutSection->title ?? 'Our Story' }}</h3>
                 <p class="fst-italic">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    {{ $aboutSection->description ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' }}
                 </p>
-                <ul>
-                    <li><i class="bi bi-check2-all"></i> <span>Fresh ingredients sourced locally</span></li>
-                    <li><i class="bi bi-check2-all"></i> <span>Expert chefs with years of experience</span></li>
-                    <li><i class="bi bi-check2-all"></i> <span>Unique dining atmosphere</span></li>
-                    <li><i class="bi bi-check2-all"></i> <span>Customer satisfaction is our priority</span></li>
-                </ul>
-                <p>
-                    Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </p>
+                @if($aboutSection && $aboutSection->features && count($aboutSection->features) > 0)
+                    <ul>
+                        @foreach($aboutSection->features as $feature)
+                            <li><i class="bi bi-check2-all"></i> <span>{{ $feature }}</span></li>
+                        @endforeach
+                    </ul>
+                @else
+                    <ul>
+                        <li><i class="bi bi-check2-all"></i> <span>Fresh ingredients sourced locally</span></li>
+                        <li><i class="bi bi-check2-all"></i> <span>Expert chefs with years of experience</span></li>
+                        <li><i class="bi bi-check2-all"></i> <span>Unique dining atmosphere</span></li>
+                        <li><i class="bi bi-check2-all"></i> <span>Customer satisfaction is our priority</span></li>
+                    </ul>
+                @endif
+                @if($aboutSection && $aboutSection->additional_text)
+                    <p>{{ $aboutSection->additional_text }}</p>
+                @else
+                    <p>
+                        Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                @endif
             </div>
         </div>
     </div>

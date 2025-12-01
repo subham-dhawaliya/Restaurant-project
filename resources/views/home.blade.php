@@ -9,17 +9,41 @@
     <div class="container">
         <div class="row gy-4 justify-content-center justify-content-lg-between">
             <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
-                <h1 data-aos="fade-up">Enjoy Your Healthy<br>Delicious Food</h1>
-                <p data-aos="fade-up" data-aos-delay="100">We are team of talented chefs making delicious food with passion</p>
+                <h1 data-aos="fade-up">
+                    @if($heroSection)
+                        {!! nl2br(e($heroSection->title)) !!}
+                    @else
+                        Enjoy Your Healthy<br>Delicious Food
+                    @endif
+                </h1>
+                <p data-aos="fade-up" data-aos-delay="100">
+                    @if($heroSection)
+                        {{ $heroSection->description }}
+                    @else
+                        We are team of talented chefs making delicious food with passion
+                    @endif
+                </p>
                 <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-                    <a href="#book-a-table" class="btn-get-started">Book a Table</a>
-                    <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox btn-watch-video d-flex align-items-center">
-                        <i class="bi bi-play-circle"></i><span>Watch Video</span>
+                    <a href="{{ $heroSection->button_link ?? '#book-a-table' }}" class="btn-get-started">
+                        {{ $heroSection->button_text ?? 'Book a Table' }}
                     </a>
+                    @if($heroSection && $heroSection->video_link)
+                        <a href="{{ $heroSection->video_link }}" class="glightbox btn-watch-video d-flex align-items-center">
+                            <i class="bi bi-play-circle"></i><span>{{ $heroSection->video_text ?? 'Watch Video' }}</span>
+                        </a>
+                    @else
+                        <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox btn-watch-video d-flex align-items-center">
+                            <i class="bi bi-play-circle"></i><span>Watch Video</span>
+                        </a>
+                    @endif
                 </div>
             </div>
             <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-                <img src="{{ asset('assets/img/hero-img.png') }}" class="img-fluid animated" alt="Yummy Food">
+                @if($heroSection && $heroSection->image)
+                    <img src="{{ asset('storage/' . $heroSection->image) }}" class="img-fluid animated" alt="{{ $heroSection->title }}">
+                @else
+                    <img src="{{ asset('assets/img/hero-img.png') }}" class="img-fluid animated" alt="Yummy Food">
+                @endif
             </div>
         </div>
     </div>
@@ -33,10 +57,10 @@
                 <img src="{{ asset('assets/img/about.jpg') }}" class="img-fluid" alt="About Us">
             </div>
             <div class="col-lg-6 order-2 order-lg-1 content">
-                <h3>About Our Restaurant</h3>
+                <h3>Two Saints Bar & Restaurant</h3>
                 <p class="fst-italic">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
+                   Two Saints Bar and Kitchen offers a warm, stylish atmosphere with delicious food and handcrafted drinks.
+                    It’s the perfect spot to relax, dine, and enjoy great company.
                 <ul>
                     <li><i class="bi bi-check2-all"></i> <span>Fresh ingredients sourced daily</span></li>
                     <li><i class="bi bi-check2-all"></i> <span>Expert chefs with international experience</span></li>
@@ -51,9 +75,8 @@
 </section>
 
 <!-- Stats Section -->
-<section id="stats" class="stats section dark-background">
-    <img src="{{ asset('assets/img/stats-bg.jpg') }}" alt="" data-aos="fade-in">
-    <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
+<section id="stats" class="stats section light-background">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row gy-4">
             <div class="col-lg-3 col-md-6">
                 <div class="stats-item text-center w-100 h-100">
