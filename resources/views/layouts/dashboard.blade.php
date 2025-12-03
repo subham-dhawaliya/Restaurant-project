@@ -121,6 +121,8 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         .sidebar-menu::-webkit-scrollbar {
@@ -221,12 +223,30 @@
             border: none;
             cursor: pointer;
             text-align: left;
+            display: block;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
         }
         
         .logout-item:hover {
             background: rgba(255,255,255,0.1);
             border-left-color: white;
             color: white;
+        }
+        
+        .logout-form {
+            margin-top: auto;
+            padding: 0;
+            margin-bottom: 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .menu-items-wrapper {
+            flex: 1;
+            overflow-y: auto;
         }
         
         .main-content {
@@ -295,32 +315,44 @@
             </div>
             
             <nav class="sidebar-menu">
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-speedometer2"></i>
-                    <span>Dashboard</span>
-                </a>
-                
-                <div class="menu-item menu-item-dropdown" id="homePageDropdown">
-                    <i class="bi bi-house-door"></i>
-                    <span>Home Page</span>
-                    <i class="bi bi-chevron-down dropdown-icon"></i>
+                <div class="menu-items-wrapper">
+                    <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <div class="menu-item menu-item-dropdown" id="homePageDropdown">
+                        <i class="bi bi-house-door"></i>
+                        <span>Home Page</span>
+                        <i class="bi bi-chevron-down dropdown-icon"></i>
+                    </div>
+                    <div class="submenu" id="homePageSubmenu">
+                        <a href="{{ route('admin.hero.index') }}" class="submenu-item">Hero Section</a>
+                        <a href="{{ route('admin.about.index') }}" class="submenu-item">About Section</a>
+                        <a href="{{ route('admin.gallery.index') }}" class="submenu-item">Gallery</a>
+                        <a href="{{ route('admin.menu.index') }}" class="submenu-item">Menu</a>
+                        <a href="{{ url('/contact') }}" class="submenu-item" target="_blank">Contact</a>
+                    </div>
+                    
+                    <a href="{{ route('admin.orders.index') }}" class="menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                        <i class="bi bi-receipt"></i>
+                        <span>Orders</span>
+                    </a>
+                    
+                    <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i>
+                        <span>Customers</span>
+                    </a>
+                    
+                    <a href="{{ route('admin.contacts') }}" class="menu-item {{ request()->routeIs('admin.contacts') ? 'active' : '' }}">
+                        <i class="bi bi-envelope"></i>
+                        <span>Messages</span>
+                    </a>
                 </div>
-                <div class="submenu" id="homePageSubmenu">
-                    <a href="{{ route('admin.hero.index') }}" class="submenu-item">Hero Section</a>
-                    <a href="{{ route('admin.about.index') }}" class="submenu-item">About Section</a>
-                    <a href="{{ route('admin.gallery.index') }}" class="submenu-item">Gallery</a>
-                    <a href="{{ route('admin.menu.index') }}" class="submenu-item">Menu</a>
-                    <a href="{{ url('/contact') }}" class="submenu-item" target="_blank">Contact</a>
-                </div>
                 
-                <a href="{{ route('admin.contacts') }}" class="menu-item {{ request()->routeIs('admin.contacts') ? 'active' : '' }}">
-                    <i class="bi bi-envelope"></i>
-                    <span>Messages</span>
-                </a>
-                
-                <form action="{{ route('logout') }}" method="POST" style="margin-top: auto;">
+                <form action="{{ route('logout') }}" method="POST" class="logout-form">
                     @csrf
-                    <button type="submit" class="menu-item logout-item">
+                    <button type="submit" class="logout-item">
                         <i class="bi bi-box-arrow-right"></i>
                         <span>Logout</span>
                     </button>

@@ -30,7 +30,17 @@ class AuthController extends Controller
         // Try to login
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
             $request->session()->regenerate();
-            return redirect()->route('dashboard')->with('success', 'Welcome back!');
+            
+            // Check if user is admin
+            if (Auth::user()->role === 'admin' || Auth::user()->is_admin) {
+                return redirect()->route('dashboard')->with('success', 'Welcome back!');
+            } else {
+                // Customer tried to login via admin login - logout and show error
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'This is a customer account. Please use the customer login at /user/login',
+                ])->withInput($request->only('email'));
+            }
         }
 
         // If login failed and this is first user, create admin account
@@ -40,6 +50,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'is_admin' => true,
+                'role' => 'admin',
             ]);
 
             Auth::login($user);
@@ -69,6 +80,13 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+        
+        // Check if user is admin - only admin can access dashboard
+        if ($user->role !== 'admin' && !$user->is_admin) {
+            Auth::logout();
+            return redirect()->route('login')->with('error', 'Access denied. Admin login required.');
+        }
+        
         $totalContacts = \App\Models\Contact::count();
         $recentContacts = \App\Models\Contact::orderBy('created_at', 'desc')->take(5)->get();
         

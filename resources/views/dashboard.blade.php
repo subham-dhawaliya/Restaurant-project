@@ -179,23 +179,27 @@
     </div>
     
     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-        <div class="stats-card">
-            <div class="icon">
-                <i class="bi bi-people"></i>
+        <a href="{{ route('admin.orders.index') }}" style="text-decoration: none;">
+            <div class="stats-card">
+                <div class="icon">
+                    <i class="bi bi-receipt"></i>
+                </div>
+                <h3>{{ \App\Models\Order::count() }}</h3>
+                <p>Total Orders</p>
             </div>
-            <h3>{{ \App\Models\User::count() }}</h3>
-            <p>Total Users</p>
-        </div>
+        </a>
     </div>
     
     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-        <div class="stats-card">
-            <div class="icon">
-                <i class="bi bi-calendar-check"></i>
+        <a href="{{ route('admin.users.index') }}" style="text-decoration: none;">
+            <div class="stats-card">
+                <div class="icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h3>{{ \App\Models\User::where('role', 'customer')->count() }}</h3>
+                <p>Total Customers</p>
             </div>
-            <h3>{{ $recentContacts->count() }}</h3>
-            <p>Recent Messages</p>
-        </div>
+        </a>
     </div>
 </div>
 

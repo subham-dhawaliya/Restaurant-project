@@ -57,7 +57,12 @@
                         <div class="gallery-info">
                             <h4>{{ $item->title }}</h4>
                             @if($item->description)
-                                <p>{{ $item->description }}</p>
+                                <div class="description-wrapper">
+                                    <p class="description-text">{{ Str::limit($item->description, 120) }}</p>
+                                    @if(strlen($item->description) > 120)
+                                        <a href="javascript:void(0)" class="read-more-btn" data-full-text="{{ $item->description }}">Read More</a>
+                                    @endif
+                                </div>
                             @endif
                             <div class="gallery-links">
                                 <a href="{{ asset('storage/' . $item->image) }}" class="glightbox" data-gallery="gallery">
@@ -82,12 +87,21 @@
 
 @section('styles')
 <style>
+    .gallery-item {
+        display: flex;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
     .gallery-wrap {
         position: relative;
         overflow: hidden;
         border-radius: 10px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .gallery-wrap:hover {
@@ -100,6 +114,7 @@
         height: 300px;
         object-fit: cover;
         transition: transform 0.3s ease;
+        flex-shrink: 0;
     }
 
     .gallery-wrap:hover img {
@@ -115,6 +130,8 @@
         padding: 20px;
         transform: translateY(100%);
         transition: transform 0.3s ease;
+        max-height: 100%;
+        overflow: hidden;
     }
 
     .gallery-wrap:hover .gallery-info {
@@ -125,18 +142,56 @@
         color: white;
         font-size: 1.2rem;
         margin-bottom: 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
-    .gallery-info p {
+    .description-wrapper {
+        margin-bottom: 10px;
+    }
+
+    .gallery-info .description-text {
         color: rgba(255,255,255,0.9);
         font-size: 0.9rem;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
+        line-height: 1.4;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .read-more-btn {
+        color: #ce1212;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 5px;
+        transition: color 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        z-index: 10;
+        padding: 2px 5px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 3px;
+    }
+
+    .read-more-btn:hover {
+        color: #ff4444;
+        text-decoration: underline;
+        background: rgba(255,255,255,0.2);
+    }
+
+    .gallery-links {
+        margin-top: 5px;
     }
 
     .gallery-links a {
         color: white;
         font-size: 1.5rem;
         transition: color 0.3s ease;
+        position: relative;
+        z-index: 5;
     }
 
     .gallery-links a:hover {
@@ -156,39 +211,83 @@
         border-color: #ce1212;
     }
 
-    .gallery-item {
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-
     .gallery-item.hidden {
         opacity: 0;
         transform: scale(0.8);
         display: none;
+    }
+
+    /* Ensure equal height rows */
+    .gallery-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .gallery-container > .col-lg-4,
+    .gallery-container > .col-md-6 {
+        display: flex;
+        margin-bottom: 30px;
     }
 </style>
 @endsection
 
 @section('scripts')
 <script>
-    // Gallery Filter
-    document.querySelectorAll('.filter-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
-            this.classList.add('active');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gallery Filter
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
 
-            const filter = this.getAttribute('data-filter');
-            const items = document.querySelectorAll('.gallery-item');
+                const filter = this.getAttribute('data-filter');
+                const items = document.querySelectorAll('.gallery-item');
 
-            items.forEach(item => {
-                if (filter === '*' || item.classList.contains(filter.substring(1))) {
-                    item.classList.remove('hidden');
-                } else {
-                    item.classList.add('hidden');
-                }
+                items.forEach(item => {
+                    if (filter === '*' || item.classList.contains(filter.substring(1))) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
             });
         });
+
+        // Read More functionality
+        setTimeout(function() {
+            document.querySelectorAll('.read-more-btn').forEach(function(button) {
+                const fullText = button.getAttribute('data-full-text');
+                const wrapper = button.closest('.description-wrapper');
+                const descriptionText = wrapper.querySelector('.description-text');
+                const truncatedText = descriptionText.textContent;
+                
+                console.log('Read More button found:', button, 'Full text:', fullText);
+                
+                button.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    
+                    console.log('Read More clicked! Current state:', this.classList.contains('expanded'));
+                    
+                    if (this.classList.contains('expanded')) {
+                        descriptionText.textContent = truncatedText;
+                        this.textContent = 'Read More';
+                        this.classList.remove('expanded');
+                        console.log('Collapsed to truncated text');
+                    } else {
+                        descriptionText.textContent = fullText;
+                        this.textContent = 'Read Less';
+                        this.classList.add('expanded');
+                        console.log('Expanded to full text');
+                    }
+                    
+                    return false;
+                };
+            });
+        }, 500);
     });
 </script>
 @endsection
