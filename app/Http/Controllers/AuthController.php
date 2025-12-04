@@ -11,7 +11,7 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        if (Auth::check()) {
+        if (Auth::guard('admin')->check()) {
             return redirect()->route('dashboard');
         }
         return view('auth.login');
@@ -27,16 +27,16 @@ class AuthController extends Controller
         // Check if this is the first user
         $isFirstUser = User::count() === 0;
 
-        // Try to login
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
+        // Try to login with admin guard
+        if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
             $request->session()->regenerate();
             
             // Check if user is admin
-            if (Auth::user()->role === 'admin' || Auth::user()->is_admin) {
+            if (Auth::guard('admin')->user()->role === 'admin' || Auth::guard('admin')->user()->is_admin) {
                 return redirect()->route('dashboard')->with('success', 'Welcome back!');
             } else {
                 // Customer tried to login via admin login - logout and show error
-                Auth::logout();
+                Auth::guard('admin')->logout();
                 return back()->withErrors([
                     'email' => 'This is a customer account. Please use the customer login at /user/login',
                 ])->withInput($request->only('email'));
@@ -53,7 +53,7 @@ class AuthController extends Controller
                 'role' => 'admin',
             ]);
 
-            Auth::login($user);
+            Auth::guard('admin')->login($user);
             $request->session()->regenerate();
             
             return redirect()->route('dashboard')->with('success', 'Admin account created successfully!');
@@ -66,7 +66,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
@@ -75,15 +75,15 @@ class AuthController extends Controller
 
     public function dashboard()
     {
-        if (!Auth::check()) {
+        if (!Auth::guard('admin')->check()) {
             return redirect()->route('login');
         }
 
-        $user = Auth::user();
+        $user = Auth::guard('admin')->user();
         
         // Check if user is admin - only admin can access dashboard
         if ($user->role !== 'admin' && !$user->is_admin) {
-            Auth::logout();
+            Auth::guard('admin')->logout();
             return redirect()->route('login')->with('error', 'Access denied. Admin login required.');
         }
         

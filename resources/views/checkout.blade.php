@@ -3,6 +3,7 @@
 @section('title', 'Checkout - Yummy Restaurant')
 
 @section('content')
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
     .checkout-page {
         padding: 60px 0;
@@ -177,7 +178,7 @@
         
         <div class="row">
             <div class="col-lg-8">
-                @if(!Auth::check())
+                @if(!Auth::guard('web')->check())
                 <!-- Login/Register Section -->
                 <div class="checkout-section">
                     <div class="section-title">
@@ -208,12 +209,12 @@
                     </div>
                     <div class="alert alert-success">
                         <i class="bi bi-check-circle me-2"></i>
-                        Logged in as <strong>{{ Auth::user()->name }}</strong> ({{ Auth::user()->email }})
+                        Logged in as <strong>{{ Auth::guard('web')->user()->name }}</strong> ({{ Auth::guard('web')->user()->email }})
                     </div>
                 </div>
                 @endif
                 
-                @if(Auth::check())
+                @if(Auth::guard('web')->check())
                 <!-- Delivery Address -->
                 <div class="checkout-section" id="deliverySection">
                     <div class="section-title">
@@ -252,15 +253,10 @@
                             <i class="bi bi-cash"></i>
                             <div>Cash on Delivery</div>
                         </label>
-                        <label class="payment-option" onclick="selectPayment('online')">
-                            <input type="radio" name="payment" value="online">
+                        <label class="payment-option" onclick="selectPayment('razorpay')">
+                            <input type="radio" name="payment" value="razorpay">
                             <i class="bi bi-credit-card-2-front"></i>
-                            <div>Online Payment</div>
-                        </label>
-                        <label class="payment-option" onclick="selectPayment('upi')">
-                            <input type="radio" name="payment" value="upi">
-                            <i class="bi bi-phone"></i>
-                            <div>UPI</div>
+                            <div>Razorpay (Card/UPI/Netbanking)</div>
                         </label>
                     </div>
                 </div>
@@ -292,7 +288,7 @@
                         <span>Total</span>
                         <span id="checkoutTotal">₹0.00</span>
                     </div>
-                    @if(Auth::check())
+                    @if(Auth::guard('web')->check())
                     <button class="place-order-btn mt-3" id="placeOrderBtn" onclick="placeOrder()">
                         <i class="bi bi-check-circle me-2"></i>Place Order
                     </button>
@@ -373,7 +369,7 @@
             delivery_address: address,
             city: city,
             pincode: pincode,
-            phone: '{{ Auth::check() ? Auth::user()->phone : "" }}',
+            phone: '{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->phone : "" }}',
             payment_method: selectedPaymentMethod,
             subtotal: subtotal,
             delivery_fee: deliveryFee,
@@ -381,28 +377,107 @@
             total: total
         };
         
-        try {
-            const response = await fetch('{{ route("order.place") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify(orderData)
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                localStorage.removeItem('cart');
-                alert('Order placed successfully! Order Number: ' + result.order_number);
-                window.location.href = '/my-orders';
-            } else {
-                alert('Error placing order: ' + (result.message || 'Please try again.'));
+        // If Razorpay payment selected
+        if (selectedPaymentMethod === 'razorpay') {
+            try {
+                // Create Razorpay order
+                const response = await fetch('{{ route("razorpay.create") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        amount: total,
+                        items: cart,
+                        delivery_address: address,
+                        city: city,
+                        pincode: pincode,
+                        phone: '{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->phone : "" }}'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Open Razorpay checkout
+                    const options = {
+                        key: result.key,
+                        amount: result.amount,
+                        currency: result.currency,
+                        name: 'Yummy Restaurant',
+                        description: 'Order Payment',
+                        order_id: result.order_id,
+                        handler: async function (response) {
+                            // Verify payment
+                            const verifyResponse = await fetch('{{ route("razorpay.verify") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    order_data: orderData
+                                })
+                            });
+                            
+                            const verifyResult = await verifyResponse.json();
+                            
+                            if (verifyResult.success) {
+                                localStorage.removeItem('cart');
+                                alert('Payment successful! Order Number: ' + verifyResult.order_number);
+                                window.location.href = '/my-orders';
+                            } else {
+                                alert('Payment verification failed: ' + verifyResult.message);
+                            }
+                        },
+                        prefill: {
+                            name: '{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->name : "" }}',
+                            email: '{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->email : "" }}',
+                            contact: '{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->phone : "" }}'
+                        },
+                        theme: {
+                            color: '#ce1212'
+                        }
+                    };
+                    
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                } else {
+                    alert('Error creating payment: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error processing payment. Please try again.');
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error placing order. Please try again.');
+        } else {
+            // COD payment
+            try {
+                const response = await fetch('{{ route("order.place") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    localStorage.removeItem('cart');
+                    alert('Order placed successfully! Order Number: ' + result.order_number);
+                    window.location.href = '/my-orders';
+                } else {
+                    alert('Error placing order: ' + (result.message || 'Please try again.'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error placing order. Please try again.');
+            }
         }
     }
     

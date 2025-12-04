@@ -36,63 +36,35 @@ Route::post('/user/logout', [\App\Http\Controllers\UserAuthController::class, 'l
 
 // Cart & Checkout Routes
 Route::get('/cart', function () {
-    // If admin is logged in, logout and redirect to home
-    if (Auth::check() && (Auth::user()->role === 'admin' || (isset(Auth::user()->is_admin) && Auth::user()->is_admin))) {
-        Auth::logout();
-        return redirect()->route('home')->with('error', 'Admin cannot access cart. Please login with a customer account.');
-    }
     return view('cart');
 })->name('cart');
+
 Route::get('/checkout', function () {
     // If not logged in, redirect to user login
-    if (!Auth::check()) {
+    if (!Auth::guard('web')->check()) {
         return redirect()->route('user.login')->with('error', 'Please login to continue');
-    }
-    
-    // If admin is logged in, prevent access to checkout
-    if (Auth::user()->role === 'admin' || (isset(Auth::user()->is_admin) && Auth::user()->is_admin)) {
-        Auth::logout();
-        return redirect()->route('user.login')->with('error', 'Please login with a customer account to place orders');
     }
     
     return view('checkout');
 })->name('checkout');
 
-// Order Routes (Customer Only)
-Route::middleware(['auth'])->group(function () {
-    Route::post('/order/place', function(\Illuminate\Http\Request $request) {
-        // Prevent admin from placing orders
-        if (Auth::user()->role === 'admin' || (isset(Auth::user()->is_admin) && Auth::user()->is_admin)) {
-            return response()->json(['success' => false, 'message' => 'Admin cannot place orders'], 403);
-        }
-        return app(\App\Http\Controllers\OrderController::class)->placeOrder($request);
-    })->name('order.place');
-    
-    Route::get('/my-orders', function() {
-        // Prevent admin from accessing customer orders page
-        if (Auth::user()->role === 'admin' || (isset(Auth::user()->is_admin) && Auth::user()->is_admin)) {
-            return redirect()->route('admin.orders.index');
-        }
-        return app(\App\Http\Controllers\OrderController::class)->myOrders();
-    })->name('user.orders');
-    
-    Route::get('/order/{id}', function($id) {
-        // Prevent admin from accessing customer order details
-        if (Auth::user()->role === 'admin' || (isset(Auth::user()->is_admin) && Auth::user()->is_admin)) {
-            return redirect()->route('admin.orders.show', $id);
-        }
-        return app(\App\Http\Controllers\OrderController::class)->orderDetails($id);
-    })->name('user.order.details');
+// Order Routes (Customer Only - using 'web' guard)
+Route::middleware(['auth:web'])->group(function () {
+    Route::post('/order/place', [\App\Http\Controllers\OrderController::class, 'placeOrder'])->name('order.place');
+    Route::post('/razorpay/create-order', [\App\Http\Controllers\OrderController::class, 'createRazorpayOrder'])->name('razorpay.create');
+    Route::post('/razorpay/verify-payment', [\App\Http\Controllers\OrderController::class, 'verifyPayment'])->name('razorpay.verify');
+    Route::get('/my-orders', [\App\Http\Controllers\OrderController::class, 'myOrders'])->name('user.orders');
+    Route::get('/order/{id}', [\App\Http\Controllers\OrderController::class, 'orderDetails'])->name('user.order.details');
 });
 
-// Auth Routes
+// Auth Routes (Admin - using 'admin' guard)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware('auth');
+Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware('auth:admin');
 
-// Admin Routes (Admin Only)
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+// Admin Routes (Admin Only - using 'admin' guard)
+Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/contacts', [ContactController::class, 'adminContacts'])->name('contacts');
     Route::post('/contacts/reply', [ContactController::class, 'sendReply'])->name('contacts.reply');
     

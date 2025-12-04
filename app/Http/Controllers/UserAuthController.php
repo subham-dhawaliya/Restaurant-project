@@ -11,9 +11,9 @@ class UserAuthController extends Controller
 {
     public function showRegister()
     {
-        // If admin is already logged in, redirect to dashboard
-        if (Auth::check() && (Auth::user()->role === 'admin' || (isset(Auth::user()->is_admin) && Auth::user()->is_admin))) {
-            return redirect()->route('dashboard');
+        // If user is already logged in, redirect to checkout
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('checkout');
         }
         return view('user.register');
     }
@@ -35,16 +35,16 @@ class UserAuthController extends Controller
             'role' => 'customer',
         ]);
         
-        Auth::login($user);
+        Auth::guard('web')->login($user);
         
         return redirect()->route('checkout')->with('success', 'Registration successful! Please complete your order.');
     }
     
     public function showLogin()
     {
-        // If admin is already logged in, redirect to dashboard
-        if (Auth::check() && (Auth::user()->role === 'admin' || (isset(Auth::user()->is_admin) && Auth::user()->is_admin))) {
-            return redirect()->route('dashboard');
+        // If user is already logged in, redirect to checkout
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('checkout');
         }
         return view('user.login');
     }
@@ -56,12 +56,12 @@ class UserAuthController extends Controller
             'password' => 'required',
         ]);
         
-        if (Auth::attempt($credentials)) {
+        if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
             
             // Check if user is admin - prevent admin from using customer login
-            if (Auth::user()->role === 'admin' || (isset(Auth::user()->is_admin) && Auth::user()->is_admin)) {
-                Auth::logout();
+            if (Auth::guard('web')->user()->role === 'admin' || (isset(Auth::guard('web')->user()->is_admin) && Auth::guard('web')->user()->is_admin)) {
+                Auth::guard('web')->logout();
                 return back()->withErrors([
                     'email' => 'This is an admin account. Please use the admin login at /login',
                 ])->withInput($request->only('email'));
@@ -78,7 +78,7 @@ class UserAuthController extends Controller
     
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
