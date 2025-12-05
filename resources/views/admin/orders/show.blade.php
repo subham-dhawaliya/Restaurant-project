@@ -99,7 +99,7 @@
         color: #155724;
     }
     
-    .status-out-for-delivery {
+    .status-out-for-delivery, .status-out_for_delivery {
         background: #cce5ff;
         color: #004085;
     }
@@ -318,7 +318,7 @@
                                 <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="confirmed" {{ $order->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
                                 <option value="preparing" {{ $order->status == 'preparing' ? 'selected' : '' }}>Preparing</option>
-                                <option value="out-for-delivery" {{ $order->status == 'out-for-delivery' ? 'selected' : '' }}>Out for Delivery</option>
+                                <option value="out_for_delivery" {{ $order->status == 'out_for_delivery' ? 'selected' : '' }}>Out for Delivery</option>
                                 <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
                                 <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                             </select>
@@ -326,6 +326,10 @@
                                 <i class="bi bi-check-circle me-2"></i>Update Status
                             </button>
                         </form>
+                        <p class="mt-2 text-muted small">
+                            <i class="bi bi-envelope me-1"></i>
+                            Email notification will be sent to customer on status update.
+                        </p>
                     </div>
                 </div>
             </div>

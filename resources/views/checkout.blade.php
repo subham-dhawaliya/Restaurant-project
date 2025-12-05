@@ -170,7 +170,215 @@
     .auth-form.active {
         display: block;
     }
+    
+    /* Order Success Modal */
+    .order-success-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.7);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .order-success-modal {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 450px;
+        width: 90%;
+        text-align: center;
+        animation: scaleIn 0.4s ease;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .success-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        animation: bounceIn 0.6s ease;
+    }
+    
+    .success-icon i {
+        font-size: 3rem;
+        color: white;
+    }
+    
+    .success-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 10px;
+    }
+    
+    .success-message {
+        color: #6c757d;
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+    
+    .order-number-box {
+        background: linear-gradient(135deg, #ce1212 0%, #ff4444 100%);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+    
+    .order-number-label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        margin-bottom: 5px;
+    }
+    
+    .order-number-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+    
+    .success-details {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+    
+    .success-detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .success-detail-item:last-child {
+        border-bottom: none;
+        font-weight: 600;
+        color: #ce1212;
+    }
+    
+    .success-buttons {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .btn-view-orders {
+        flex: 1;
+        padding: 15px;
+        background: linear-gradient(135deg, #ce1212 0%, #ff4444 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-view-orders:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(206,18,18,0.4);
+        color: white;
+    }
+    
+    .btn-continue-shopping {
+        flex: 1;
+        padding: 15px;
+        background: white;
+        color: #ce1212;
+        border: 2px solid #ce1212;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-continue-shopping:hover {
+        background: #fff5f5;
+        color: #ce1212;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes scaleIn {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes bounceIn {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+    
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #ce1212;
+        animation: confettiFall 3s ease-out forwards;
+    }
+    
+    @keyframes confettiFall {
+        0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
 </style>
+
+<!-- Order Success Modal -->
+<div class="order-success-overlay" id="orderSuccessModal">
+    <div class="order-success-modal">
+        <div class="success-icon">
+            <i class="bi bi-check-lg"></i>
+        </div>
+        <h2 class="success-title">Order Placed Successfully!</h2>
+        <p class="success-message">Thank you for your order. We're preparing your delicious food!</p>
+        
+        <div class="order-number-box">
+            <div class="order-number-label">Your Order Number</div>
+            <div class="order-number-value" id="modalOrderNumber">ORD-XXXXXXXX</div>
+        </div>
+        
+        <div class="success-details">
+            <div class="success-detail-item">
+                <span>Payment Method</span>
+                <span id="modalPaymentMethod">Cash on Delivery</span>
+            </div>
+            <div class="success-detail-item">
+                <span>Estimated Delivery</span>
+                <span>30-45 minutes</span>
+            </div>
+            <div class="success-detail-item">
+                <span>Total Amount</span>
+                <span id="modalTotalAmount">₹0.00</span>
+            </div>
+        </div>
+        
+        <div class="success-buttons">
+            <a href="/my-orders" class="btn-view-orders">
+                <i class="bi bi-receipt me-2"></i>View My Orders
+            </a>
+            <a href="/menu" class="btn-continue-shopping">
+                <i class="bi bi-arrow-left me-2"></i>Order More
+            </a>
+        </div>
+    </div>
+</div>
 
 <div class="checkout-page">
     <div class="container checkout-container">
@@ -223,19 +431,19 @@
                     </div>
                     <div class="form-group">
                         <label>Complete Address</label>
-                        <textarea class="form-control" id="deliveryAddress" rows="3" placeholder="House no., Street, Area" required></textarea>
+                        <textarea class="form-control" id="deliveryAddress" rows="3" placeholder="House no., Street, Area" required>{{ Auth::guard('web')->user()->address ?? '' }}</textarea>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>City</label>
-                                <input type="text" class="form-control" id="city" placeholder="City" required>
+                                <input type="text" class="form-control" id="city" placeholder="City" value="{{ Auth::guard('web')->user()->city ?? '' }}" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Pincode</label>
-                                <input type="text" class="form-control" id="pincode" placeholder="Pincode" required>
+                                <input type="text" class="form-control" id="pincode" placeholder="Pincode" value="{{ Auth::guard('web')->user()->pincode ?? '' }}" required>
                             </div>
                         </div>
                     </div>
@@ -428,8 +636,7 @@
                             
                             if (verifyResult.success) {
                                 localStorage.removeItem('cart');
-                                alert('Payment successful! Order Number: ' + verifyResult.order_number);
-                                window.location.href = '/my-orders';
+                                showOrderSuccessModal(verifyResult.order_number, 'Razorpay (Online)', total);
                             } else {
                                 alert('Payment verification failed: ' + verifyResult.message);
                             }
@@ -469,8 +676,7 @@
                 
                 if (result.success) {
                     localStorage.removeItem('cart');
-                    alert('Order placed successfully! Order Number: ' + result.order_number);
-                    window.location.href = '/my-orders';
+                    showOrderSuccessModal(result.order_number, 'Cash on Delivery', total);
                 } else {
                     alert('Error placing order: ' + (result.message || 'Please try again.'));
                 }
@@ -478,6 +684,48 @@
                 console.error('Error:', error);
                 alert('Error placing order. Please try again.');
             }
+        }
+    }
+    
+    function showOrderSuccessModal(orderNumber, paymentMethod, total) {
+        document.getElementById('modalOrderNumber').textContent = orderNumber;
+        document.getElementById('modalPaymentMethod').textContent = paymentMethod;
+        document.getElementById('modalTotalAmount').textContent = '₹' + total.toFixed(2);
+        document.getElementById('orderSuccessModal').style.display = 'flex';
+        
+        // Create confetti effect
+        createConfetti();
+        
+        // Update cart badge
+        updateCartBadge();
+    }
+    
+    function createConfetti() {
+        const colors = ['#ce1212', '#ff4444', '#28a745', '#ffc107', '#17a2b8', '#6f42c1'];
+        const modal = document.getElementById('orderSuccessModal');
+        
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                modal.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }, i * 50);
+        }
+    }
+    
+    function updateCartBadge() {
+        const badge = document.querySelector('.cart-badge');
+        if (badge) {
+            badge.textContent = '0';
+            badge.style.display = 'none';
         }
     }
     

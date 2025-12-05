@@ -8,7 +8,8 @@ use App\Http\Controllers\AuthController;
 Route::get('/', function () {
     $heroSection = \App\Models\HeroSection::where('is_active', true)->latest()->first();
     return view('home', compact('heroSection'));
-});
+})->name('home');
+
 Route::get('/home', function () {
     $heroSection = \App\Models\HeroSection::where('is_active', true)->latest()->first();
     return view('home', compact('heroSection'));
@@ -55,6 +56,11 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/razorpay/verify-payment', [\App\Http\Controllers\OrderController::class, 'verifyPayment'])->name('razorpay.verify');
     Route::get('/my-orders', [\App\Http\Controllers\OrderController::class, 'myOrders'])->name('user.orders');
     Route::get('/order/{id}', [\App\Http\Controllers\OrderController::class, 'orderDetails'])->name('user.order.details');
+    
+    // User Profile Routes
+    Route::get('/profile', [\App\Http\Controllers\UserProfileController::class, 'show'])->name('user.profile');
+    Route::put('/profile', [\App\Http\Controllers\UserProfileController::class, 'update'])->name('user.profile.update');
+    Route::put('/profile/password', [\App\Http\Controllers\UserProfileController::class, 'updatePassword'])->name('user.password.update');
 });
 
 // Auth Routes (Admin - using 'admin' guard)

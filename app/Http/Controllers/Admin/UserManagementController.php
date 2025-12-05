@@ -11,8 +11,8 @@ class UserManagementController extends Controller
 {
     private function checkAdmin()
     {
-        if (!auth()->check() || (auth()->user()->role !== 'admin' && !auth()->user()->is_admin)) {
-            auth()->logout();
+        if (!auth()->guard('admin')->check() || (auth()->guard('admin')->user()->role !== 'admin' && !auth()->guard('admin')->user()->is_admin)) {
+            auth()->guard('admin')->logout();
             abort(redirect()->route('login')->with('error', 'Access denied. Admin login required.'));
         }
     }

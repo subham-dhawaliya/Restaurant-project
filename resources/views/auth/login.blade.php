@@ -1,6 +1,6 @@
-@extends('layouts.main')
+@extends('layouts.auth')
 
-@section('title', 'Login - Yummy Restaurant')
+@section('title', 'Admin Login - Yummy Restaurant')
 
 @section('content')
 <style>
