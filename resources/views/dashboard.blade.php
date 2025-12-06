@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Dashboard - Yummy Restaurant')
+@section('title', 'Dashboard - Evara Restaurant')
 
 @section('styles')
 <style>

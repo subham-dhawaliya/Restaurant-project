@@ -1,3 +1,6 @@
+@php
+    $footerSettings = \App\Models\SiteSetting::getSettings();
+@endphp
 <footer id="footer" class="footer dark-background">
     <div class="container">
       <div class="row gy-3">
@@ -5,8 +8,7 @@
           <i class="bi bi-geo-alt icon"></i>
           <div class="address">
             <h4>Address</h4>
-            <p>A108 Adam Street</p>
-            <p>New York, NY 535022</p>
+            <p>{{ $footerSettings->footer_address ?? 'A108 Adam Street, New York, NY 535022' }}</p>
           </div>
         </div>
 
@@ -15,8 +17,8 @@
           <div>
             <h4>Contact</h4>
             <p>
-              <strong>Phone:</strong> <span>+1 5589 55488 55</span><br>
-              <strong>Email:</strong> <span>info@example.com</span><br>
+              <strong>Phone:</strong> <span>{{ $footerSettings->footer_phone ?? '+1 5589 55488 55' }}</span><br>
+              <strong>Email:</strong> <span>{{ $footerSettings->footer_email ?? 'info@example.com' }}</span><br>
             </p>
           </div>
         </div>
@@ -25,30 +27,33 @@
           <i class="bi bi-clock icon"></i>
           <div>
             <h4>Opening Hours</h4>
-            <p>
-              <strong>Mon-Sat:</strong> <span>11AM - 23PM</span><br>
-              <strong>Sunday:</strong> <span>Closed</span>
-            </p>
+            <p>{{ $footerSettings->footer_timing ?? 'Mon-Sat: 11AM - 23PM' }}</p>
           </div>
         </div>
 
         <div class="col-lg-3 col-md-6">
           <h4>Follow Us</h4>
           <div class="social-links d-flex">
-            <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
-            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            @if($footerSettings->twitter_url)
+            <a href="{{ $footerSettings->twitter_url }}" class="twitter" target="_blank"><i class="bi bi-twitter-x"></i></a>
+            @endif
+            @if($footerSettings->facebook_url)
+            <a href="{{ $footerSettings->facebook_url }}" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
+            @endif
+            @if($footerSettings->instagram_url)
+            <a href="{{ $footerSettings->instagram_url }}" class="instagram" target="_blank"><i class="bi bi-instagram"></i></a>
+            @endif
+            @if($footerSettings->youtube_url)
+            <a href="{{ $footerSettings->youtube_url }}" class="youtube" target="_blank"><i class="bi bi-youtube"></i></a>
+            @endif
           </div>
         </div>
       </div>
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Yummy</strong> <span>All Rights Reserved</span></p>
-      <div class="credits">
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-      </div>
+      <p>{{ $footerSettings->copyright_text ?? '© Copyright Yummy All Rights Reserved' }}</p>
+      
     </div>
 </footer>
 

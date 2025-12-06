@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Dashboard - Yummy Restaurant')</title>
+    <title>@yield('title', 'Dashboard - Evara Restaurant')</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -310,7 +310,7 @@
                 <div class="logo">
                     <i class="bi bi-shop"></i>
                 </div>
-                <h3>Yummy</h3>
+                <h3>Evara</h3>
                 <p>Restaurant Admin</p>
             </div>
             
@@ -331,7 +331,7 @@
                         <a href="{{ route('admin.about.index') }}" class="submenu-item">About Section</a>
                         <a href="{{ route('admin.gallery.index') }}" class="submenu-item">Gallery</a>
                         <a href="{{ route('admin.menu.index') }}" class="submenu-item">Menu</a>
-                        <a href="{{ url('/contact') }}" class="submenu-item" target="_blank">Contact</a>
+                        <!-- <a href="{{ url('/contact') }}" class="submenu-item" target="_blank">Contact</a> -->
                     </div>
                     
                     <a href="{{ route('admin.orders.index') }}" class="menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
@@ -347,6 +347,16 @@
                     <a href="{{ route('admin.contacts') }}" class="menu-item {{ request()->routeIs('admin.contacts') ? 'active' : '' }}">
                         <i class="bi bi-envelope"></i>
                         <span>Messages</span>
+                    </a>
+                    
+                    <a href="{{ route('admin.blogs.index') }}" class="menu-item {{ request()->routeIs('admin.blogs.*') ? 'active' : '' }}">
+                        <i class="bi bi-newspaper"></i>
+                        <span>Blogs</span>
+                    </a>
+                    
+                    <a href="{{ route('admin.settings.index') }}" class="menu-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                        <i class="bi bi-gear"></i>
+                        <span>Site Settings</span>
                     </a>
                 </div>
                 

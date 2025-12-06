@@ -28,6 +28,10 @@ Route::get('/menu', function () {
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
+// Blog Routes
+Route::get('/blog', [\App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
+
 // User Authentication Routes
 Route::get('/user/register', [\App\Http\Controllers\UserAuthController::class, 'showRegister'])->name('user.register');
 Route::post('/user/register', [\App\Http\Controllers\UserAuthController::class, 'register'])->name('user.register.submit');
@@ -87,4 +91,11 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::resource('about', \App\Http\Controllers\Admin\AboutSectionController::class);
     Route::resource('gallery', \App\Http\Controllers\Admin\GallerySectionController::class);
     Route::resource('menu', \App\Http\Controllers\Admin\MenuSectionController::class);
+    
+    // Site Settings
+    Route::get('/settings', [\App\Http\Controllers\Admin\SiteSettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [\App\Http\Controllers\Admin\SiteSettingController::class, 'update'])->name('settings.update');
+    
+    // Blog Management
+    Route::resource('blogs', \App\Http\Controllers\Admin\BlogController::class);
 });

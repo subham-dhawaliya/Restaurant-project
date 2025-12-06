@@ -268,7 +268,7 @@
 <section id="menu" class="menu section">
     <div class="container section-title" data-aos="fade-up">
         <h2>Our Menu</h2>
-        <p><span>Check Our</span> <span class="description-title">Yummy Menu</span></p>
+        <p><span>Check Our</span> <span class="description-title">Evara Menu</span></p>
     </div><!-- End Section Title -->
 
     <div class="container">

@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Shopping Cart - Yummy Restaurant')
+@section('title', 'Shopping Cart - Evara Restaurant')
 
 @section('content')
 <style>

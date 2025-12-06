@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'About Us - Yummy Restaurant')
+@section('title', 'About Us - Evara Restaurant')
 @section('body_class', 'about-page')
 
 @section('content')

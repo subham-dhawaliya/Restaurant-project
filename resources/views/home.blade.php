@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Home - Yummy Restaurant')
+@section('title', 'Home - Evara Restaurant')
 @section('body_class', 'index-page')
 
 @section('content')
