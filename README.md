@@ -30,10 +30,14 @@ Version Control: Git & GitHub
 ## 📸 Screenshots
 
 ### Home Page
-![Home Page](screenshots/home.png)
+![Home Page](home.png)
 
 ### Menu Page
-![Menu Page](screenshots/menu.png)
+![Menu Page](Evara.png)
 
-### Contact Page
-![Contact Page](screenshots/contact.png)
+### Cart Page
+![Cart Page](pay.png)
+
+
+### Admin Page
+![Admin Page](admin.png)
